@@ -6,7 +6,7 @@ export default class User {
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 
-    @CreateDateColumn({ type: "timestamp" })
+    @CreateDateColumn({ type: "timestamptz" })
     created_at!: Date;
 
     @Column()

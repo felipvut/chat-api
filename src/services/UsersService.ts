@@ -90,6 +90,7 @@ export class UsersService extends DefaultService {
             const user = {
                 email: body.email,
                 password: body.password,
+                created_at: new Date()
             }
 
             const createdUser = await this.repository.save(user);
@@ -105,7 +106,8 @@ export class UsersService extends DefaultService {
 
             const person = {
                 name: body.name,
-                users_uuid: createdUser.uuid
+                users_uuid: createdUser.uuid,
+                created_at: new Date()
             }
 
             const personsService = new PersonsService();
