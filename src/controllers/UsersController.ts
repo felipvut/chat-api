@@ -11,7 +11,7 @@ export class UsersController extends DefaultController {
         const entity = await this.service.login(body);
         if (entity.status >= 200 && entity.status < 300) {
             return response.status(entity.status).send({
-                data: entity,
+                token: entity?.data,
                 success: true,
                 message: entity.message || 'Login realizado com sucesso'
             })

@@ -8,7 +8,7 @@ import routes from "./routes";
 import jwt from "jsonwebtoken"
 
 const app = express()
-const port = 3000
+const port = 5000
 
 AppDataSource.initialize().then(() => {
     app.listen(port, () => {
@@ -28,10 +28,6 @@ app.use(async (req, res, next) => {
     if (urlsAutorizadas?.indexOf(req.url) >= 0) {
         next();
         return
-    }
-    if (req.method == 'GET') {
-        next();
-        return;
     }
 
     await jwt.verify(req.headers.authorization, process.env.JWT_SECRET, function (err, decoded) {

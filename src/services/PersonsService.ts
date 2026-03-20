@@ -10,10 +10,6 @@ export class PersonsService extends DefaultService {
     async listPersons(): Promise<ServiceResponse> {
         try {
             const entities: any[] = await this.repository.find();
-            const dateUtilService = new DateUtilService()
-            for (let x of entities) {
-                x.due_date_br = dateUtilService.parseDateDbToBr(x.due_date);
-            }
 
             return {
                 data: entities,

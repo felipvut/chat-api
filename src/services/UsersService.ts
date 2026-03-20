@@ -21,6 +21,7 @@ export class UsersService extends DefaultService {
             const comparePassword = await bcrypt.compare(body.password, users[0].password)
             let token = null
             if (comparePassword) {
+                users[0].password = ""
                 token = jwt.sign(JSON.parse(JSON.stringify(users[0])), process.env.JWT_SECRET, {
                     expiresIn: '1d'
                 });

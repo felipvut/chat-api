@@ -2,6 +2,8 @@ import { DataSource } from "typeorm";
 import dotenv from "dotenv";
 import User from "../entities/User";
 import Person from "../entities/Person";
+import Chat from "../entities/Chat";
+import Message from "../entities/Message";
 dotenv.config()
 
 const AppDataSource = new DataSource({
@@ -14,6 +16,7 @@ const AppDataSource = new DataSource({
     ssl: false,
     entities: [
         Person, User,
+        Chat, Message
     ],
     synchronize: false,
     logging: true,
