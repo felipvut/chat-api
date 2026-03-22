@@ -4,8 +4,9 @@ import Chat from "../entities/Chat";
 import { DefaultService } from "./DefaultService";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken"
-import { UsersService } from "./UsersService";
 import { PersonsService } from "./PersonsService";
+import { MessagesService } from "./MessagesService";
+import Message from "../entities/Message";
 
 export class ChatsService extends DefaultService {
     repository = AppDataSource.getRepository(Chat)
@@ -46,6 +47,152 @@ export class ChatsService extends DefaultService {
             }
             return {
                 data: chats,
+                success: true,
+                status: 200
+            }
+        } catch (e) {
+            console.log(e)
+            return {
+                data: null,
+                success: false,
+                status: 500
+            }
+        }
+    }
+
+    async getChat(request: Request, response: Response, uuid: string): Promise<ServiceResponse> {
+        try {
+            const token = request.headers.authorization;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const personsService = new PersonsService();
+            const person = await personsService.repository.findOne({
+                where: {
+                    users_uuid: decoded?.uuid
+                }
+            })
+
+            if (!person) {
+                return {
+                    data: null,
+                    status: 500,
+                    success: false
+                }
+            }
+
+            const chat: any = await this.repository.findOne({
+                relations: ['author', 'contact'],
+                where: {
+                    uuid: uuid
+                }
+            });
+
+            if (chat?.author?.uuid == person?.uuid) {
+                chat.name = chat?.contact?.name
+            } else {
+                chat.name = chat?.author?.name
+            }
+
+            return {
+                data: chat,
+                success: true,
+                status: 200
+            }
+        } catch (e) {
+            console.log(e)
+            return {
+                data: null,
+                success: false,
+                status: 500
+            }
+        }
+    }
+
+    async getMessages(request: Request, response: Response, uuid: string): Promise<ServiceResponse> {
+        try {
+            const token = request.headers.authorization;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const personsService = new PersonsService();
+            const person = await personsService.repository.findOne({
+                where: {
+                    users_uuid: decoded?.uuid
+                }
+            })
+
+            if (!person) {
+                return {
+                    data: null,
+                    status: 500,
+                    success: false
+                }
+            }
+            const messagesService = new MessagesService()
+            const messages: any[] = await messagesService.repository.find({
+                relations: ['author'],
+                where: {
+                    chats_uuid: uuid
+                },
+                order: {
+                    created_at: "ASC"
+                }
+            });
+
+            for (let message of messages) {
+                if (message?.author?.uuid == person?.uuid) {
+                    message.is_author = true
+                } else {
+                    message.is_author = false
+                }
+            }
+
+            return {
+                data: messages,
+                success: true,
+                status: 200
+            }
+        } catch (e) {
+            console.log(e)
+            return {
+                data: null,
+                success: false,
+                status: 500
+            }
+        }
+    }
+
+
+    async sendMessage(request: Request, response: Response, uuid: string): Promise<ServiceResponse> {
+        try {
+            const data = request.body;
+            const token = request.headers.authorization;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const personsService = new PersonsService();
+            const person = await personsService.repository.findOne({
+                where: {
+                    users_uuid: decoded?.uuid
+                }
+            })
+
+            if (!person) {
+                return {
+                    data: null,
+                    status: 500,
+                    success: false
+                }
+            }
+
+            const messagesService = new MessagesService();
+
+            const message = {
+                created_at: new Date(),
+                chats_uuid: uuid,
+                message: data?.message,
+                author_uuid: person?.uuid
+            }
+
+            const create = await messagesService.repository.save(message);
+            
+            return {
+                data: create,
                 success: true,
                 status: 200
             }

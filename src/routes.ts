@@ -91,4 +91,22 @@ routes.get('/my-chats', async (req, res) => {
     return await controller.myChats(req, res)
 })
 
+routes.get('/get-chat/:uuid', async (req, res) => {
+    const { uuid } = req.params;
+    const controller = new ChastsController();
+    return await controller.getChat(req, res, uuid)
+})
+
+routes.get('/messages/:uuid', async (req, res) => {
+    const { uuid } = req.params;
+    const controller = new ChastsController();
+    return await controller.getMessages(req, res, uuid)
+})
+
+routes.post('/messages/:uuid', async (req, res) => {
+    const { uuid } = req.params;
+    const controller = new ChastsController();
+    return await controller.sendMessage(req, res, uuid)
+})
+
 export default routes;
