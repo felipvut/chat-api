@@ -48,7 +48,6 @@ io.on('connection', async (socket) => {
     socket.on('send_message', async (data) => {
         const dbMessage = await chatsService.sendMessageSocket(socket.handshake.auth.token, data);
         if (dbMessage?.success) {
-            // socket.emit('receive_message', dbMessage?.data)
             io.to(dbMessage?.data?.chats_uuid).emit('receive_message', dbMessage?.data)
         }
     });
