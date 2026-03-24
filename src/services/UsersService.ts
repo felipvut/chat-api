@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import { ServiceResponse } from "../../types/ServiceResponse";
 import { PersonsService } from "./PersonsService";
+import { Request } from "express";
 
 export class UsersService extends DefaultService {
     repository = AppDataSource.getRepository(User)
@@ -125,6 +126,32 @@ export class UsersService extends DefaultService {
 
             return {
                 data: createdUser,
+                success: true,
+                status: 201
+            }
+        } catch (e) {
+            console.log(e);
+            return {
+                data: null,
+                success: false,
+                status: 500
+            }
+        }
+    }
+
+    async me(request: Request): Promise<ServiceResponse> {
+        try {
+            const token = request.headers.authorization;
+            var decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const personsService = new PersonsService();
+            const person = await personsService.repository.findOne({
+                where: {
+                    users_uuid: decoded?.uuid
+                }
+            })
+            decoded.person = person
+            return {
+                data: decoded,
                 success: true,
                 status: 201
             }

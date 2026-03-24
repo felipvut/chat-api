@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 export class UsersController extends DefaultController {
     service = new UsersService()
 
-    async login(request: Request, response: Response){
+    async login(request: Request, response: Response) {
         const body = request.body
         const entity = await this.service.login(body);
         if (entity.status >= 200 && entity.status < 300) {
@@ -23,7 +23,7 @@ export class UsersController extends DefaultController {
         })
     }
 
-    async register(request: Request, response: Response){
+    async register(request: Request, response: Response) {
         const body = request.body
         const entity = await this.service.register(body);
         if (entity.status >= 200 && entity.status < 300) {
@@ -36,6 +36,22 @@ export class UsersController extends DefaultController {
         return response.status(entity.status).send({
             success: false,
             message: entity.message || 'Erro ao criar conta'
+        })
+    }
+
+    async me(request: Request, response: Response) {
+        const entity = await this.service.me(request);
+        if (entity.status >= 200 && entity.status < 300) {
+            return response.status(entity.status).send({
+                data: entity?.data,
+                success: true,
+                message: entity.message
+            })
+        }
+
+        return response.status(entity.status).send({
+            success: false,
+            message: entity.message || 'Erro ao buscar usuário'
         })
     }
 }

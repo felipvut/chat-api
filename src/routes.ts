@@ -14,6 +14,11 @@ const controllers = {
     },
 }
 
+routes.get('/me', async (req, res) => {
+    const controller = new UsersController()
+    return await controller.me(req, res)
+})
+
 routes.post('/register', async (req, res) => {
     const controller = new UsersController()
     return await controller.register(req, res)

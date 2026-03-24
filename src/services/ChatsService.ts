@@ -190,7 +190,7 @@ export class ChatsService extends DefaultService {
             }
 
             const create = await messagesService.repository.save(message);
-            
+
             return {
                 data: create,
                 success: true,
@@ -204,5 +204,103 @@ export class ChatsService extends DefaultService {
                 status: 500
             }
         }
+    }
+
+    async sendMessageSocket(token: string, data: any) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const personsService = new PersonsService();
+            const person = await personsService.repository.findOne({
+                where: {
+                    users_uuid: decoded?.uuid
+                }
+            })
+
+            if (!person) {
+                return {
+                    data: null,
+                    status: 500,
+                    success: false
+                }
+            }
+
+            const allowChat: any[] = await this.repository.find({
+                where: [
+                    {
+                        uuid: data?.chats_uuid,
+                        author_uuid: person?.uuid
+                    },
+                    {
+                        uuid: data?.chats_uuid,
+                        contact_uuid: person?.uuid
+                    }
+                ]
+            });
+
+            if (allowChat?.length <= 0) {
+                return {
+                    data: null,
+                    success: false,
+                    message: "Unauthorized"
+                }
+            }
+
+            const messagesService = new MessagesService();
+
+            const message = {
+                created_at: data?.created_at,
+                chats_uuid: data?.chats_uuid,
+                message: data?.message,
+                author_uuid: person?.uuid
+            }
+
+            const create: any = await messagesService.repository.save(message);
+
+            if (create?.author_uuid == person?.uuid) {
+                create.is_author = true
+            } else {
+                create.is_author = false
+            }
+
+            return {
+                data: create,
+                success: true,
+            }
+        } catch (e) {
+            console.log(e)
+            return {
+                data: null,
+                success: false,
+            }
+        }
+    }
+
+    async checkChat(token: string, uuid: string) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const personsService = new PersonsService();
+        const person = await personsService.repository.findOne({
+            where: {
+                users_uuid: decoded?.uuid
+            }
+        })
+
+        const allowChat = await this.repository.find({
+            where: [
+                {
+                    uuid: uuid,
+                    author_uuid: person?.uuid
+                },
+                {
+                    uuid: uuid,
+                    contact_uuid: person?.uuid
+                }
+            ]
+        });
+
+        if (allowChat?.length <= 0) {
+            return false
+        }
+
+        return true
     }
 }
