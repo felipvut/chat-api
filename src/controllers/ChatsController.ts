@@ -68,4 +68,20 @@ export class ChastsController extends DefaultController {
             message: entity.message || 'Erro ao processar requisição'
         })
     }
+
+    async newChat(request: Request, response: Response) {
+        const entity = await this.service.newChat(request, response)
+        if (entity.status >= 200 && entity.status < 300) {
+            return response.status(entity.status).send({
+                data: entity.data,
+                success: true,
+                message: entity.message || 'Objto retornado com sucesso'
+            })
+        }
+
+        return response.status(entity.status).send({
+            success: false,
+            message: entity.message || 'Erro ao processar requisição'
+        })
+    }
 }

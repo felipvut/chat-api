@@ -119,4 +119,9 @@ routes.post('/messages/:uuid', async (req, res) => {
     return await controller.sendMessage(req, res, uuid)
 })
 
+routes.post('/new-chat', async (req, res) => {
+    const controller = new ChastsController();
+    return await controller.newChat(req, res)
+})
+
 export default routes;

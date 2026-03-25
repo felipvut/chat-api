@@ -159,6 +159,77 @@ export class ChatsService extends DefaultService {
         }
     }
 
+    async newChat(request: Request, response: Response): Promise<ServiceResponse> {
+        try {
+            const data = request.body;
+            const token = request.headers.authorization;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const personsService = new PersonsService();
+            const person = await personsService.repository.findOne({
+                where: {
+                    users_uuid: decoded?.uuid
+                }
+            })
+
+            if (!person) {
+                return {
+                    data: null,
+                    status: 500,
+                    success: false
+                }
+            }
+
+            if (!data?.persons_uuid) {
+                return {
+                    data: null,
+                    status: 500,
+                    message: '"persons_uuid" é um parâmtero obrigatório.',
+                    success: false
+                }
+            }
+
+            const chats = await this.repository.find({
+                relations: ['author', 'contact'],
+                where: [
+                    { author_uuid: person?.uuid, contact_uuid: data?.persons_uuid },
+                    { author_uuid: data?.persons_uuid, contact_uuid: person?.uuid }
+                ]
+            });
+
+            if (chats?.length > 0) {
+                if (!data?.persons_uuid) {
+                    return {
+                        data: null,
+                        status: 500,
+                        message: 'Chat já existente.',
+                        success: false
+                    }
+                }
+
+            }
+
+            const chat = {
+                created_at: new Date(),
+                author_uuid: person?.uuid,
+                contact_uuid: data?.persons_uuid
+            }
+
+            const create = await this.repository.save(chat);
+
+            return {
+                data: create,
+                success: true,
+                status: 200
+            }
+        } catch (e) {
+            console.log(e)
+            return {
+                data: null,
+                success: false,
+                status: 500
+            }
+        }
+    }
 
     async sendMessage(request: Request, response: Response, uuid: string): Promise<ServiceResponse> {
         try {
