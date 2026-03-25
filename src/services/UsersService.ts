@@ -164,4 +164,58 @@ export class UsersService extends DefaultService {
             }
         }
     }
+
+    async saveProfile(request: Request): Promise<ServiceResponse> {
+        try {
+            const data = request.body;
+            const token = request.headers.authorization;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const personsService = new PersonsService();
+            const person = await personsService.repository.findOne({
+                where: {
+                    users_uuid: decoded?.uuid
+                }
+            })
+
+            if (!person) {
+                return {
+                    data: null,
+                    status: 500,
+                    success: false
+                }
+            }
+    
+            const personUpdate: any = {
+                name: data.name,
+            }
+
+            if(data?.photho) {
+                personUpdate.files_uuid = data?.photo;
+            }
+
+            const savePerson = await personsService.repository.save(person);
+
+            if (!savePerson) {
+                return {
+                    data: null,
+                    success: false,
+                    status: 500,
+                    message: 'Erro ao criar usuário'
+                }
+            }
+
+            return {
+                data: savePerson,
+                success: true,
+                status: 201
+            }
+        } catch (e) {
+            console.log(e);
+            return {
+                data: null,
+                success: false,
+                status: 500
+            }
+        }
+    }
 }

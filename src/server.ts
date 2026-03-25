@@ -68,11 +68,6 @@ app.use(express.json())
 app.use(async (req, res, next) => {
     const urlsAutorizadas = ['/login', '/register']
 
-    if (req.method == 'GET') {
-        next()
-        return
-    }
-
     if (urlsAutorizadas?.indexOf(req.url) >= 0) {
         next();
         return
