@@ -11,6 +11,9 @@ export default class Chat {
     created_at!: Date;
 
     @Column()
+    last_message: string;
+
+    @Column()
     author_uuid: string;
 
     @ManyToOne(() => Person, (author) => author.chats_author)

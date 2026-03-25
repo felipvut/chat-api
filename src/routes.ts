@@ -96,6 +96,11 @@ routes.get('/my-chats', async (req, res) => {
     return await controller.myChats(req, res)
 })
 
+routes.get('/news-chats', async (req, res) => {
+    const controller = new PersonsController();
+    return await controller.listNewsChats(req, res)
+})
+
 routes.get('/get-chat/:uuid', async (req, res) => {
     const { uuid } = req.params;
     const controller = new ChastsController();

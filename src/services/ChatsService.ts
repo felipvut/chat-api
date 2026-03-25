@@ -256,6 +256,11 @@ export class ChatsService extends DefaultService {
 
             const create: any = await messagesService.repository.save(message);
 
+            await this.repository.save({
+                uuid: data?.chats_uuid,
+                last_message: data?.message
+            })
+
             if (create?.author_uuid == person?.uuid) {
                 create.is_author = true
             } else {

@@ -53,7 +53,6 @@ io.on('connection', async (socket) => {
     });
 });
 
-
 AppDataSource.initialize().then(() => {
     server.listen(port, () => {
         console.log("API rodando na porta " + port)
