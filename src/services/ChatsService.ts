@@ -41,8 +41,10 @@ export class ChatsService extends DefaultService {
             for (let chat of chats) {
                 if (chat?.author?.uuid == person?.uuid) {
                     chat.name = chat?.contact?.name
+                    chat.files_uuid = chat?.contact?.files_uuid
                 } else {
                     chat.name = chat?.author?.name
+                    chat.files_uuid = chat?.author?.files_uuid
                 }
             }
             return {
@@ -88,8 +90,10 @@ export class ChatsService extends DefaultService {
 
             if (chat?.author?.uuid == person?.uuid) {
                 chat.name = chat?.contact?.name
+                chat.files_uuid = chat?.contact?.files_uuid
             } else {
                 chat.name = chat?.author?.name
+                chat.files_uuid = chat?.author?.files_uuid
             }
 
             return {

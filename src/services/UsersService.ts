@@ -8,6 +8,8 @@ import bcrypt from "bcrypt"
 import { ServiceResponse } from "../../types/ServiceResponse";
 import { PersonsService } from "./PersonsService";
 import { Request } from "express";
+import { FilesService } from "./FilesService";
+import { FileUtilService } from "../../util/file";
 
 export class UsersService extends DefaultService {
     repository = AppDataSource.getRepository(User)
@@ -144,11 +146,22 @@ export class UsersService extends DefaultService {
             const token = request.headers.authorization;
             var decoded = jwt.verify(token, process.env.JWT_SECRET);
             const personsService = new PersonsService();
-            const person = await personsService.repository.findOne({
+            const person: any = await personsService.repository.findOne({
                 where: {
                     users_uuid: decoded?.uuid
                 }
-            })
+            });
+            if(person?.files_uuid) {
+                const filesService = new FilesService()
+                const file = await filesService.repository.findOne({
+                    where: {
+                        uuid: person?.files_uuid
+                    }
+                });
+                person.photo = file.data.toString('base64');
+                person.photo = 'data:' + file.mimetype + ';base64,' + person.photo
+                console.log(person.photo)
+            }
             decoded.person = person
             return {
                 data: decoded,
@@ -186,14 +199,25 @@ export class UsersService extends DefaultService {
             }
     
             const personUpdate: any = {
+                uuid: person?.uuid,
                 name: data.name,
             }
 
-            if(data?.photho) {
-                personUpdate.files_uuid = data?.photo;
+            if(data?.photo) {
+                const filesService = new FilesService();
+                const fileUtilService = new FileUtilService()
+                const mimetype = fileUtilService.detectMimeType(data?.photo);
+
+                const photo = {
+                    data: Buffer.from(data?.photo?.split(',')[1], 'base64'),
+                    mimetype
+                }
+
+                const savedFile = await filesService.create(photo)
+                personUpdate.files_uuid = savedFile.uuid;
             }
 
-            const savePerson = await personsService.repository.save(person);
+            const savePerson = await personsService.repository.save(personUpdate);
 
             if (!savePerson) {
                 return {

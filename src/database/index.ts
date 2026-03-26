@@ -4,6 +4,8 @@ import User from "../entities/User";
 import Person from "../entities/Person";
 import Chat from "../entities/Chat";
 import Message from "../entities/Message";
+import File from "../entities/File";
+
 dotenv.config()
 
 const AppDataSource = new DataSource({
@@ -16,7 +18,8 @@ const AppDataSource = new DataSource({
     ssl: false,
     entities: [
         Person, User,
-        Chat, Message
+        Chat, Message,
+        File
     ],
     synchronize: false,
     logging: true,

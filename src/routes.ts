@@ -2,6 +2,7 @@ import { Router } from "express";
 import { PersonsController } from "./controllers/PersonsController";
 import { UsersController } from "./controllers/UsersController";
 import { ChastsController } from "./controllers/ChatsController";
+import { FilesController } from "./controllers/FilesController";
 
 const routes = Router()
 
@@ -124,4 +125,14 @@ routes.post('/new-chat', async (req, res) => {
     return await controller.newChat(req, res)
 })
 
+routes.post('/save-profile', async (req, res) => {
+    const controller = new UsersController();
+    return await controller.saveProfile(req, res)
+})
+
+routes.get('/get-file/:uuid', async (req, res) => {
+    const { uuid } = req.params;
+    const controller = new FilesController();
+    return await controller.getFile(req, res, uuid)
+})
 export default routes;

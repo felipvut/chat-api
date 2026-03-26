@@ -63,10 +63,15 @@ AppDataSource.initialize().then(() => {
 
 app.use(cors())
 
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
 
 app.use(async (req, res, next) => {
     const urlsAutorizadas = ['/login', '/register']
+
+    if (req.url?.startsWith('/get-file')) {
+        next();
+        return
+    }
 
     if (urlsAutorizadas?.indexOf(req.url) >= 0) {
         next();

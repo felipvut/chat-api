@@ -59,6 +59,10 @@ export class PersonsService extends DefaultService {
 
             const persons_uuids = []
 
+            if(person?.uuid) {
+                persons_uuids.push(person?.uuid);
+            }
+
             for (const chat of chats) {
                 if (chat.author_uuid == person?.uuid) {
                     persons_uuids.push(chat.contact_uuid)

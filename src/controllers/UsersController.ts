@@ -54,4 +54,20 @@ export class UsersController extends DefaultController {
             message: entity.message || 'Erro ao buscar usuário'
         })
     }
+
+    async saveProfile(request: Request, response: Response) {
+        const entity = await this.service.saveProfile(request);
+        if (entity.status >= 200 && entity.status < 300) {
+            return response.status(entity.status).send({
+                data: entity?.data,
+                success: true,
+                message: entity.message
+            })
+        }
+
+        return response.status(entity.status).send({
+            success: false,
+            message: entity.message || 'Erro ao salvar'
+        })
+    }
 }

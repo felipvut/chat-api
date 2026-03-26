@@ -17,12 +17,15 @@ export default class Person {
     @Column()
     users_uuid: string;
 
+    @Column()
+    files_uuid: string;
+
     @OneToMany(() => Chat, (chat) => chat.author)
     chats_author: Chat[]
 
     @OneToMany(() => Chat, (chat) => chat.contact)
     chats_contact: Chat[]
-    
+
     @OneToMany(() => Message, (message) => message.author)
     messages: Message[]
 }

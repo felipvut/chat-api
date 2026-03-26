@@ -1,22 +1,28 @@
-import { randomUUID } from "crypto";
 import AppDataSource from "../database";
 import File from "../entities/File";
 
 export class FilesService {
-    repo = AppDataSource.getRepository(File)
+    repository = AppDataSource.getRepository(File)
 
     async list() {
-        return await this.repo.find()
+        return await this.repository.find()
     }
 
-    async create(req: any) {
+    async getFile(uuid: string) {
+
+        return await this.repository.findOne({
+            where: {
+                uuid: uuid
+            }
+        })
+    }
+
+    async create(body: any) {
         const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9)
-        const uuid = randomUUID()
-        return await this.repo.save({
-            uuid: uuid,
-            data: req.file.buffer,
+        return await this.repository.save({
+            data: body.data,
             name: uniqueName,
-            mimetype: req.file.mimetype
+            mimetype: body.mimetype
         })
     }
 }
