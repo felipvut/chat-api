@@ -10,6 +10,9 @@ export default class Chat {
     @CreateDateColumn({ type: "timestamptz" })
     created_at!: Date;
 
+    @CreateDateColumn({ type: "timestamptz" })
+    updated_at!: Date;
+
     @Column()
     last_message: string;
 

@@ -333,6 +333,7 @@ export class ChatsService extends DefaultService {
 
             await this.repository.save({
                 uuid: data?.chats_uuid,
+                updated_at: new Date(),
                 last_message: data?.message
             })
 
@@ -374,7 +375,10 @@ export class ChatsService extends DefaultService {
                     uuid: uuid,
                     contact_uuid: person?.uuid
                 }
-            ]
+            ],
+            order: {
+                updated_at: "DESC"
+            }
         });
 
         if (allowChat?.length <= 0) {
