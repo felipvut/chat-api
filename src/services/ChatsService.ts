@@ -35,7 +35,10 @@ export class ChatsService extends DefaultService {
                 where: [
                     { author_uuid: person?.uuid },
                     { contact_uuid: person?.uuid }
-                ]
+                ],
+                order: {
+                    updated_at: "ASC"
+                }
             });
 
             for (let chat of chats) {
@@ -375,10 +378,7 @@ export class ChatsService extends DefaultService {
                     uuid: uuid,
                     contact_uuid: person?.uuid
                 }
-            ],
-            order: {
-                updated_at: "DESC"
-            }
+            ]
         });
 
         if (allowChat?.length <= 0) {
