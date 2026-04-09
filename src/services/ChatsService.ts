@@ -37,7 +37,7 @@ export class ChatsService extends DefaultService {
                     { contact_uuid: person?.uuid }
                 ],
                 order: {
-                    updated_at: "ASC"
+                    updated_at: "DESC"
                 }
             });
 
@@ -217,6 +217,7 @@ export class ChatsService extends DefaultService {
 
             const chat = {
                 created_at: new Date(),
+                updated_at: new Date(),
                 author_uuid: person?.uuid,
                 contact_uuid: data?.persons_uuid
             }
